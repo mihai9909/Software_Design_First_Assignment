@@ -23,10 +23,6 @@ public class User {
     @Column(name = "role")
     private String role;
 
-    public boolean validPassword(String password) {
-        return this.password.equals(password);
-    }
-
     public boolean isAdmin(){
         return this.role.equals("Admin");
     }

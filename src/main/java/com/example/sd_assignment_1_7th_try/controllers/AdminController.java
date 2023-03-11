@@ -2,6 +2,7 @@ package com.example.sd_assignment_1_7th_try.controllers;
 
 import com.example.sd_assignment_1_7th_try.services.CashierCRUDService;
 import com.example.sd_assignment_1_7th_try.services.SessionService;
+import com.example.sd_assignment_1_7th_try.services.ShowCRUDService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class AdminController {
         authorizeAdmin();
 
         if(cashierCRUDService.updateCashier(id, email, password, role))
-            return ResponseEntity.ok().body("User updated successfully!");
+            return ResponseEntity.ok("User updated successfully!");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please verify credentials and id");
     }
