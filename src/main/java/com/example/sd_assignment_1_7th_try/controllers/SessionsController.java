@@ -39,6 +39,13 @@ public class SessionsController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
         }
     }
+    @DeleteMapping("/logout")
+    public ResponseEntity<String> deleteCookie(HttpServletResponse response){
+        Cookie cookie = new Cookie("_session_id",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Logged out!");
+    }
 
     @GetMapping("/current-user")
     public ResponseEntity<String> readCookie() {

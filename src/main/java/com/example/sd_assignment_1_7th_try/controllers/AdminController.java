@@ -59,7 +59,7 @@ public class AdminController {
         if(cashierCRUDService.deleteCashier(id))
             return ResponseEntity.ok().body("Cashier deleted successfully!");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cashier with " + id + "does not exist");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cashier with id " + id + " does not exist");
     }
 
     private void authorizeAdmin() {
