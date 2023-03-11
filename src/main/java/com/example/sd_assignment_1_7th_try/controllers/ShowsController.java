@@ -52,6 +52,17 @@ public class ShowsController {
         return ResponseEntity.badRequest().body("Failed to create show");
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteShow(@PathVariable Long id){
+        authorizeAdmin();
+
+        if(showCRUDService.deleteShow(id)){
+            return ResponseEntity.ok("Show deleted successfully");
+        }
+
+        return ResponseEntity.badRequest().body("Failed to delete show");
+    }
+
     private void authorizeAdmin() {
         try{
             sessionService.isLoggedInAsAdmin();

@@ -52,4 +52,14 @@ public class ShowCRUDService {
             return false;
         }
     }
+
+    public boolean deleteShow(Long id) {
+        Optional<Show> showOptional = showRepository.findById(id);
+        if(showOptional.isEmpty())
+            return false;
+        
+        Show show = showOptional.get();
+        showRepository.delete(show);
+        return true;
+    }
 }
