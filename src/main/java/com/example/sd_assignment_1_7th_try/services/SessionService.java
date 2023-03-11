@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,14 +34,13 @@ public class SessionService {
         User user = userRepository.findByEmail(credentials.get("email"));
         if(user == null) {
             return false;
-        } else {
-            String hashedPassword = credentials.get("password"); //passwordEncoder.hashPassword(credentials.get("password"));
-            return user.validPassword(hashedPassword);
         }
+
+        return passwordEncoder.checkPassword(credentials.get("password"), user.getPassword());
     }
 
 
-    public User isLoggedInAsAdmin() throws  AccessDeniedException {
+    public User isLoggedInAsAdmin() throws  AccessDeniedException, AuthenticationException {
         User currentUser = getCurrentUser();
         if (!currentUser.isAdmin())
             throw new AccessDeniedException("You are not authorized to access this resource");
@@ -52,21 +52,23 @@ public class SessionService {
         return new Cookie("_session_id", generateToken(user.getId().toString()));
     }
 
-    private String getUserIDFromCookie(Cookie[] cookies){
+    private Long getUserIDFromCookie(Cookie[] cookies) throws AuthenticationException{
         // Get the cookie by name
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("_session_id")) {
-                    return getUserIDFromToken(cookie.getValue());
+                    String id = getUserIDFromToken(cookie.getValue());
+                    return Long.parseLong(id);
                 }
             }
         }
 
-        return "";
+        throw new AuthenticationException("Please login!");
     }
 
-    public User getCurrentUser() {
-        return userRepository.findUserById(Long.parseLong(getUserIDFromCookie(request.getCookies())));
+    public User getCurrentUser() throws AuthenticationException {
+        Long id = getUserIDFromCookie(request.getCookies());
+        return userRepository.findUserById(id);
     }
 
     private String getUserIDFromToken(String token) {
