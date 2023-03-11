@@ -1,10 +1,7 @@
 package com.example.sd_assignment_1_7th_try.controllers;
 
-import com.example.sd_assignment_1_7th_try.models.User;
-import com.example.sd_assignment_1_7th_try.repositories.UserRepository;
-import com.example.sd_assignment_1_7th_try.services.AdminService;
+import com.example.sd_assignment_1_7th_try.services.CashierCRUDService;
 import com.example.sd_assignment_1_7th_try.services.SessionService;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,13 +19,13 @@ public class AdminController {
     @Autowired
     private final SessionService sessionService;
     @Autowired
-    private final AdminService adminService;
+    private final CashierCRUDService cashierCRUDService;
 
     @GetMapping("/cashiers")
     public ResponseEntity<String> getCashiers(){
         authorizeAdmin();
 
-        return ResponseEntity.ok(adminService.findCashiers());
+        return ResponseEntity.ok(cashierCRUDService.findCashiers());
     }
 
     @PutMapping("/update/{cashier_id}")
@@ -38,7 +35,7 @@ public class AdminController {
                                                 @RequestParam("role") String role){
         authorizeAdmin();
 
-        if(adminService.updateCashier(id, email, password, role))
+        if(cashierCRUDService.updateCashier(id, email, password, role))
             return ResponseEntity.ok().body("User updated successfully!");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please verify credentials and id");
@@ -49,7 +46,7 @@ public class AdminController {
                                                 @RequestParam("password") String password){
         authorizeAdmin();
 
-        if(adminService.createCashier(email, password))
+        if(cashierCRUDService.createCashier(email, password))
             return ResponseEntity.ok().body("Cashier created successfully!");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please verify credentials and id");
@@ -59,10 +56,10 @@ public class AdminController {
     public ResponseEntity<String> createCashier(@PathVariable("cashier_id") String id){
         authorizeAdmin();
 
-        if(adminService.deleteCashier(id))
-            return ResponseEntity.ok().body("Cashier created successfully!");
+        if(cashierCRUDService.deleteCashier(id))
+            return ResponseEntity.ok().body("Cashier deleted successfully!");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please verify credentials and id");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cashier with " + id + "does not exist");
     }
 
     private void authorizeAdmin() {
