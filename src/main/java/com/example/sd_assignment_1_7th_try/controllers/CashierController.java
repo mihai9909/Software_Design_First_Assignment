@@ -14,15 +14,15 @@ import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/cashiers")
 @RequiredArgsConstructor
-public class AdminController {
+public class CashierController {
     @Autowired
     private final SessionService sessionService;
     @Autowired
     private final CashierCRUDService cashierCRUDService;
 
-    @GetMapping("/cashiers")
+    @GetMapping
     public ResponseEntity<String> getCashiers(){
         authorizeAdmin();
 
@@ -54,7 +54,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/delete/{cashier_id}")
-    public ResponseEntity<String> createCashier(@PathVariable("cashier_id") String id){
+    public ResponseEntity<String> deleteCashier(@PathVariable("cashier_id") String id){
         authorizeAdmin();
 
         if(cashierCRUDService.deleteCashier(id))
