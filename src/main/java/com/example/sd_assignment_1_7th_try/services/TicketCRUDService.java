@@ -69,7 +69,11 @@ public class TicketCRUDService {
         return ticketRepository.findAll();
     }
 
-    public List<Ticket> findByShow(Show show) {
-        return ticketRepository.findByShow(show);
+    public List<Ticket> findByShow(Long id) {
+        Optional<Show> show = showRepository.findById(id);
+        if(show.isEmpty())
+            return null;
+
+        return ticketRepository.findByShow(show.get());
     }
 }

@@ -4,15 +4,18 @@ import com.example.sd_assignment_1_7th_try.models.Ticket;
 import com.example.sd_assignment_1_7th_try.services.SerializationService;
 import com.example.sd_assignment_1_7th_try.services.SessionService;
 import com.example.sd_assignment_1_7th_try.services.TicketCRUDService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
@@ -24,14 +27,33 @@ public class TicketsController {
     @Autowired
     private SessionService sessionService;
     @Autowired
-    private SerializationService jsonSerializationService;
+    private SerializationService serializationService;
     @GetMapping
-    private ResponseEntity<String> findTickets() throws JsonProcessingException {
+    private ResponseEntity<String> findTickets() {
         sessionService.authorizeCashier();
 
-        String json = jsonSerializationService.serializeAs("JSON", ticketCRUDService.findAllTickets());
+        String json = serializationService.serializeAs("JSON", ticketCRUDService.findAllTickets());
         return ResponseEntity.ok(json);
     }
+
+    @GetMapping("/show/{id}")
+    @ResponseBody
+    private ResponseEntity<byte[]> findTicketsForShow(@PathVariable Long id) {
+        sessionService.authorizeAdmin();
+
+        List<Ticket> tickets = ticketCRUDService.findByShow(id);
+
+        String json = serializationService.serializeAs("JSON", tickets);
+
+        byte[] content = json.getBytes(StandardCharsets.UTF_8);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentLength(content.length);
+        headers.setContentDispositionFormData("attachment", "tickets.json");
+
+        return new ResponseEntity<>(content, headers, HttpStatus.OK);
+    }
+
 
     @PostMapping("/sell")
     private ResponseEntity<String> createTicket(@RequestBody Ticket ticket){
