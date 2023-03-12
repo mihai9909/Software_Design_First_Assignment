@@ -69,9 +69,20 @@ public class TicketsController {
         sessionService.authorizeCashier();
 
         if (ticketCRUDService.updateTicket(id, ticket)) {
-            return ResponseEntity.ok("Updated sucessfully");
+            return ResponseEntity.ok("Updated successfully");
         }
         return ResponseEntity.badRequest().body("Failed to update");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTicket(@PathVariable Long id){
+        sessionService.authorizeCashier();
+
+        if(ticketCRUDService.deleteTicket(id)){
+            return ResponseEntity.ok("Deleted successfully");
+        }
+
+        return ResponseEntity.badRequest().body("Failed to delete");
     }
 
     @ExceptionHandler(ConstraintViolationException.class)

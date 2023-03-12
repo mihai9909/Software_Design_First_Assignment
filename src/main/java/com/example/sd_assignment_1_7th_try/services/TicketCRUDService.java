@@ -46,17 +46,36 @@ public class TicketCRUDService {
         }
         Ticket existingTicket = existingTicketOptional.get();
 
-        Optional<Show> showOptional = showRepository.findById(existingTicket.getShow().getId());
-        if (showOptional.isEmpty()) {
+        Show show = existingTicket.getShow();
+        if (show == null) {
             return false;
         }
-        Show show = showOptional.get();
+
         Integer placesDifference = existingTicket.getPlaces() - updatedTicket.getPlaces();
         show.setRemainingTickets(show.getRemainingTickets() + placesDifference);
 
         try {
             updatedTicket.setId(id);
             ticketRepository.save(updatedTicket);
+            showRepository.save(show);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    @Transactional
+    public boolean deleteTicket(Long id){
+        Optional<Ticket> ticketOptional = ticketRepository.findById(id);
+        if(ticketOptional.isEmpty())
+            return false;
+
+        Ticket ticket = ticketOptional.get();
+        Show show = ticket.getShow();
+        show.setRemainingTickets(ticket.getPlaces() + show.getRemainingTickets());
+        try {
+            ticketRepository.save(ticket);
             showRepository.save(show);
             return true;
         } catch (Exception e) {
