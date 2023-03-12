@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.TimeZoneStorage;
+import org.hibernate.validator.constraints.Range;
 
 import java.sql.Timestamp;
 
@@ -26,6 +27,7 @@ public class Show {
     private String genre;
     @Column(name = "date_time")
     private Timestamp dateTime;
-    @Column(name = "max_tickets")
-    private Integer maxTickets;
+    @Column(name = "remaining_tickets")
+    @Range(min = 0, message = "Remaining tickets must be greater than or equal to 0")
+    private Integer remainingTickets;
 }

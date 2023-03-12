@@ -60,15 +60,6 @@ public class SessionService {
         return currentUser;
     }
 
-    public User isLoggedInAsCashier() throws  AccessDeniedException, AuthenticationException {
-        User currentUser = getCurrentUser();
-        if(currentUser == null)
-            throw new AuthenticationException("Please login!");
-        if (!currentUser.isCashier())
-            throw new AccessDeniedException("You are not authorized to access this resource");
-        return currentUser;
-    }
-
     public Cookie generateSessionCookie(String email){
         User user = userRepository.findByEmail(email);
         return new Cookie("_session_id", generateToken(user.getId().toString()));

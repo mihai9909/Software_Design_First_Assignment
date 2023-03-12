@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,15 +16,15 @@ import java.util.Optional;
 public class ShowCRUDService {
     @Autowired
     private ShowRepository showRepository;
-    public String findAll(){
-        return showRepository.findAll().toString();
+    public List<Show> findAll(){
+        return showRepository.findAll();
     }
 
     public boolean updateShow(Long id,
                               String title,
                               String genre,
                               Timestamp dateTime,
-                              Integer maxTickets){
+                              Integer remainingTickets){
         Optional<Show> showOptional = showRepository.findById(id);
         if (showOptional.isEmpty()) {
             return false;
@@ -33,7 +34,7 @@ public class ShowCRUDService {
         show.setTitle(title);
         show.setGenre(genre);
         show.setDateTime(dateTime);
-        show.setMaxTickets(maxTickets);
+        show.setRemainingTickets(remainingTickets);
 
         try {
             showRepository.save(show);
@@ -57,7 +58,7 @@ public class ShowCRUDService {
         Optional<Show> showOptional = showRepository.findById(id);
         if(showOptional.isEmpty())
             return false;
-        
+
         Show show = showOptional.get();
         showRepository.delete(show);
         return true;

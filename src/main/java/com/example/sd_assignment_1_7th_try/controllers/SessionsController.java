@@ -3,17 +3,13 @@ package com.example.sd_assignment_1_7th_try.controllers;
 import com.example.sd_assignment_1_7th_try.models.User;
 import com.example.sd_assignment_1_7th_try.services.SessionService;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.naming.AuthenticationException;
-import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +27,6 @@ public class SessionsController {
         credentials.put("email", email);
         credentials.put("password", password);
         if (sessionService.authenticate(credentials)) {
-            // Create a new cookie with JWT
             Cookie cookie = sessionService.generateSessionCookie(email);
             response.addCookie(cookie);
             return ResponseEntity.ok("Authenticated!");
@@ -49,7 +44,9 @@ public class SessionsController {
 
     @GetMapping("/current-user")
     public ResponseEntity<String> readCookie() {
-        User currentUser = sessionService.authorizeAdmin();
-        return ResponseEntity.ok("Email: " + currentUser.getEmail());
+        User currentUser = sessionService.getCurrentUser();
+        if(currentUser == null)
+            return ResponseEntity.ok("Not logged in!");
+        return ResponseEntity.ok("Email: " + currentUser.getEmail() + " Role: " + currentUser.getRole());
     }
 }

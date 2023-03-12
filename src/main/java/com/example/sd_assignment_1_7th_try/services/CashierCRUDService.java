@@ -5,6 +5,9 @@ import com.example.sd_assignment_1_7th_try.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CashierCRUDService {
@@ -14,8 +17,8 @@ public class CashierCRUDService {
     @Autowired
     private final PasswordEncoder passwordEncoder;
 
-    public String findCashiers(){
-        return userRepository.findUserByRole("Cashier").toString();
+    public List<User> findCashiers(){
+        return userRepository.findUserByRole("Cashier");
     }
 
     public boolean updateCashier(String id, String email, String password, String role){

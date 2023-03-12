@@ -1,6 +1,7 @@
 package com.example.sd_assignment_1_7th_try.controllers;
 
 import com.example.sd_assignment_1_7th_try.services.CashierCRUDService;
+import com.example.sd_assignment_1_7th_try.services.SerializationService;
 import com.example.sd_assignment_1_7th_try.services.SessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,15 @@ public class CashierController {
     private final SessionService sessionService;
     @Autowired
     private final CashierCRUDService cashierCRUDService;
+    @Autowired
+    private final SerializationService serializationService;
 
     @GetMapping
     public ResponseEntity<String> getCashiers(){
         sessionService.authorizeAdmin();
 
-        return ResponseEntity.ok(cashierCRUDService.findCashiers());
+        String json = serializationService.serializeAs("JSON", cashierCRUDService.findCashiers());
+        return ResponseEntity.ok(json);
     }
 
     @PutMapping("/update/{cashier_id}")
