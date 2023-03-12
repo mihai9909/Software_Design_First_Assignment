@@ -2,7 +2,6 @@ package com.example.sd_assignment_1_7th_try.controllers;
 
 import com.example.sd_assignment_1_7th_try.services.CashierCRUDService;
 import com.example.sd_assignment_1_7th_try.services.SessionService;
-import com.example.sd_assignment_1_7th_try.services.ShowCRUDService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +23,7 @@ public class CashierController {
 
     @GetMapping
     public ResponseEntity<String> getCashiers(){
-        authorizeAdmin();
+        sessionService.authorizeAdmin();
 
         return ResponseEntity.ok(cashierCRUDService.findCashiers());
     }
@@ -34,7 +33,7 @@ public class CashierController {
                                                 @RequestParam("email") String email,
                                                 @RequestParam("password") String password,
                                                 @RequestParam("role") String role){
-        authorizeAdmin();
+        sessionService.authorizeAdmin();
 
         if(cashierCRUDService.updateCashier(id, email, password, role))
             return ResponseEntity.ok("User updated successfully!");
@@ -45,7 +44,7 @@ public class CashierController {
     @PostMapping("/create")
     public ResponseEntity<String> createCashier(@RequestParam("email") String email,
                                                 @RequestParam("password") String password){
-        authorizeAdmin();
+        sessionService.authorizeAdmin();
 
         if(cashierCRUDService.createCashier(email, password))
             return ResponseEntity.ok().body("Cashier created successfully!");
@@ -55,21 +54,11 @@ public class CashierController {
 
     @DeleteMapping("/delete/{cashier_id}")
     public ResponseEntity<String> deleteCashier(@PathVariable("cashier_id") String id){
-        authorizeAdmin();
+        sessionService.authorizeAdmin();
 
         if(cashierCRUDService.deleteCashier(id))
             return ResponseEntity.ok().body("Cashier deleted successfully!");
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cashier with id " + id + " does not exist");
-    }
-
-    private void authorizeAdmin() {
-        try{
-            sessionService.isLoggedInAsAdmin();
-        } catch (AuthenticationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (AccessDeniedException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
-        }
     }
 }

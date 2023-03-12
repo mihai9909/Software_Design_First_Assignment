@@ -9,7 +9,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.naming.AuthenticationException;
 import java.nio.file.AccessDeniedException;
@@ -40,9 +42,29 @@ public class SessionService {
     }
 
 
-    public User isLoggedInAsAdmin() throws  AccessDeniedException, AuthenticationException {
+    public User authorizeAdmin() {
         User currentUser = getCurrentUser();
+        if (currentUser == null)
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Please login!");
         if (!currentUser.isAdmin())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to access this resource");
+        return currentUser;
+    }
+
+    public User authorizeCashier() throws  ResponseStatusException {
+        User currentUser = getCurrentUser();
+        if (currentUser == null)
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Please login!");
+        if (!currentUser.isCashier())
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to access this resource");
+        return currentUser;
+    }
+
+    public User isLoggedInAsCashier() throws  AccessDeniedException, AuthenticationException {
+        User currentUser = getCurrentUser();
+        if(currentUser == null)
+            throw new AuthenticationException("Please login!");
+        if (!currentUser.isCashier())
             throw new AccessDeniedException("You are not authorized to access this resource");
         return currentUser;
     }
@@ -52,7 +74,7 @@ public class SessionService {
         return new Cookie("_session_id", generateToken(user.getId().toString()));
     }
 
-    private Long getUserIDFromCookie(Cookie[] cookies) throws AuthenticationException{
+    private Long getUserIDFromCookie(Cookie[] cookies) {
         // Get the cookie by name
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -63,11 +85,13 @@ public class SessionService {
             }
         }
 
-        throw new AuthenticationException("Please login!");
+        return null;
     }
 
-    public User getCurrentUser() throws AuthenticationException {
+    public User getCurrentUser() {
         Long id = getUserIDFromCookie(request.getCookies());
+        if(id == null)
+            return null;
         return userRepository.findUserById(id);
     }
 

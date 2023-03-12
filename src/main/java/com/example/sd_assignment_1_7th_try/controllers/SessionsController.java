@@ -49,13 +49,7 @@ public class SessionsController {
 
     @GetMapping("/current-user")
     public ResponseEntity<String> readCookie() {
-        try {
-            User currentUser = sessionService.isLoggedInAsAdmin();
-            return ResponseEntity.ok("Email: " + currentUser.getEmail());
-        } catch (AccessDeniedException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+        User currentUser = sessionService.authorizeAdmin();
+        return ResponseEntity.ok("Email: " + currentUser.getEmail());
     }
 }

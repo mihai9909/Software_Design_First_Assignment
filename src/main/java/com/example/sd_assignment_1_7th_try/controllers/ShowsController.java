@@ -32,7 +32,7 @@ public class ShowsController {
     private ResponseEntity<String> updateShow(@PathVariable Long id, @RequestParam String title,
                                               @RequestParam String genre, @RequestParam Timestamp dateTime,
                                               @RequestParam Integer maxTickets){
-        authorizeAdmin();
+        sessionService.authorizeAdmin();
 
         if (showCRUDService.updateShow(id, title, genre, dateTime, maxTickets)) {
             return ResponseEntity.ok("Show updated successfully");
@@ -43,7 +43,7 @@ public class ShowsController {
 
     @PostMapping
     public ResponseEntity<String> createShow(@RequestBody Show show) {
-        authorizeAdmin();
+        sessionService.authorizeAdmin();
 
         if (showCRUDService.createShow(show)) {
             return ResponseEntity.ok("Show created successfully");
@@ -54,22 +54,12 @@ public class ShowsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteShow(@PathVariable Long id){
-        authorizeAdmin();
+        sessionService.authorizeAdmin();
 
         if(showCRUDService.deleteShow(id)){
             return ResponseEntity.ok("Show deleted successfully");
         }
 
         return ResponseEntity.badRequest().body("Failed to delete show");
-    }
-
-    private void authorizeAdmin() {
-        try{
-            sessionService.isLoggedInAsAdmin();
-        } catch (AuthenticationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (AccessDeniedException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
-        }
     }
 }

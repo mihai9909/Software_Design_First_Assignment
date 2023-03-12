@@ -26,4 +26,7 @@ public class User {
     public boolean isAdmin(){
         return this.role.equals("Admin");
     }
+    public boolean isCashier(){
+        return this.role.equals("Cashier");
+    }
 }
