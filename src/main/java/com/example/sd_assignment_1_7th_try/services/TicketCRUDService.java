@@ -4,6 +4,7 @@ import com.example.sd_assignment_1_7th_try.models.Show;
 import com.example.sd_assignment_1_7th_try.models.Ticket;
 import com.example.sd_assignment_1_7th_try.repositories.ShowRepository;
 import com.example.sd_assignment_1_7th_try.repositories.TicketRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class TicketCRUDService {
     @Autowired
     private TicketRepository ticketRepository;
